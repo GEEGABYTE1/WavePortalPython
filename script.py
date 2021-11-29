@@ -16,8 +16,26 @@ class Interact:
     signed_in = None
     signed_in_user = None
 
+    def __init__(self):
+        print('\n')
+        print('/sign_up: To sign up to the chain')
+        print('/sign_in: If you already have a username')
+        user_prompt = str(input(": "))
+        user_prompt = user_prompt.strip(" ")
+        if user_prompt == '/sign_up':
+            self.sign_up()
+        elif user_prompt == '/sign_in':
+            self.sign_in()
+            if self.signed_in == True:
+                self.interaction()
+                self.prompt()
+        else:
+            print(colored("Command not foud!"), 'red')
+
+
     def interaction(self):
         if self.signed_in == True:
+            print('\n')
             print("Welcome to Interact! A Simulated Smart Contract Editor ")
             print("/wave: To wave at a user")
             print("/deploy_wave: To deploy a new wave")
@@ -60,7 +78,7 @@ class Interact:
             
                 if wave_validation == None:
                     print(colored('{user} cannot be waved to'.format(user=chosen_user), 'red'))
-    
+            
     
     def find_user_hash(self, user):
         accounts = db.find({})
@@ -75,16 +93,22 @@ class Interact:
         pass
 
     def sign_up(self):
-        user_user = str(input("Please type in a username: "))
-        user_pass = str(input("Please type in a password: "))
-        user_pass = user_pass.strip(" ")
-        new_user = User()
-        new_user = new_user.create_user(user_user, user_pass)
-        user_account = {'Username': new_user[0], 'Password': new_user[1], 'Transaction_Count': new_user[2], 'Transactions': new_user[-2], 'User_Hash': new_user[-1]}
-        db.insert_one(user_account)
-        print(colored("Account creation successful!", 'green'))
-        time.sleep(0.2)
-        print("{user} account hash: {hash}".format(user=new_user[0], hash=new_user[-1]))
+        while True:
+            user_user = str(input("Please type in a username: "))
+            user_pass = str(input("Please type in a password: "))
+            users = self.retrieve_all_users()
+            if user_user in users:
+                print(colored('That user is already taken', 'blue'))
+            else:
+                user_pass = user_pass.strip(" ")
+                new_user = User()
+                new_user = new_user.create_user(user_user, user_pass)
+                user_account = {'Username': new_user[0], 'Password': new_user[1], 'Transaction_Count': new_user[2], 'Transactions': new_user[-2], 'User_Hash': new_user[-1]}
+                db.insert_one(user_account)
+                print(colored("Account creation successful!", 'green'))
+                time.sleep(0.2)
+                print("{user} account hash: {hash}".format(user=new_user[0], hash=new_user[-1]))
+                break
 
     def sign_in(self):
         user_user = str(input("Please type in your username: "))
@@ -108,6 +132,14 @@ class Interact:
         if self.signed_in == None:
             print(colored("Some credentials don't match", 'red'))
 
+    def retrieve_all_users(self):
+        users = []
+        accounts = db.find({})
+        for account in accounts:
+            users.append(account['Username'])
+        
+        return users
+
 
 
 class User:
@@ -124,7 +156,9 @@ class User:
         return name, password, transactions, transactions_lst, user_hash
 
 
-test = Interact()
+interaction_prompt = Interact()
+
+
 
 
 
