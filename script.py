@@ -14,7 +14,17 @@ db = user_cluster['blockchain']['users']
 class Interact:
 
     signed_in = None
-    
+
+    def interaction(self):
+        if self.signed_in == True:
+            print("Welcome to Interact! A Simulated Smart Contract Editor ")
+            print("/wave: To wave at a user")
+            print("/deploy_wave: To deploy a new wave")
+            print("/view_waves: To view your waves")
+            print("/")    
+
+
+
     def transaction(self):
         pass
 
@@ -24,7 +34,7 @@ class Interact:
         user_pass = user_pass.strip(" ")
         new_user = User()
         new_user = new_user.create_user(user_user, user_pass)
-        user_account = {'Username': new_user[0], 'Password': user_pass, 'Transactions': new_user[2], 'User_Hash': new_user[-1]}
+        user_account = {'Username': new_user[0], 'Password': user_pass, 'Transaction_Count': new_user[2], 'Transactions': new_user[-2], 'User_Hash': new_user[-1]}
         db.insert_one(user_account)
         print(colored("Account creation successful!", 'green'))
         time.sleep(0.2)
@@ -53,18 +63,18 @@ class Interact:
 
 
 
-
 class User:
 
     def create_user(self, name, password):
         amount = random.randint(100, 10000)              # Transactions are in dollars
         transactions = 0 
+        transactions_lst = []
         time_stamp_of_creation = datetime.datetime.now()
         user_header = str(amount) + str(transactions) + str(time_stamp_of_creation) + password + name
         user_hash = sha256(user_header.encode())
         user_hash = user_hash.hexdigest()
 
-        return name, password, transactions, user_hash
+        return name, password, transactions, transactions_lst, user_hash
 
 
 test = Interact()
