@@ -4,6 +4,7 @@ from hashlib import sha256
 from pymongo import MongoClient
 from termcolor import colored
 import random
+import time
 
 blockchain = Blockchain()
 
@@ -17,26 +18,27 @@ class Interact:
     signed_in_user = None
 
     def __init__(self):
-        print('\n')
-        print('/sign_up: To sign up to the chain')
-        print('/sign_in: If you already have a username')
-        user_prompt = str(input(": "))
-        user_prompt = user_prompt.strip(" ")
-        if user_prompt == '/sign_up':
-            self.sign_up()
-        elif user_prompt == '/sign_in':
-            self.sign_in()
-            if self.signed_in == True:
-                self.interaction()
-                self.prompt()
-        else:
-            print(colored("Command not foud!"), 'red')
+        while True:
+            print('\n')
+            print('/sign_up: To sign up to the chain')
+            print('/sign_in: If you already have a username')
+            user_prompt = str(input(": "))
+            user_prompt = user_prompt.strip(" ")
+            if user_prompt == '/sign_up':
+                self.sign_up()
+            elif user_prompt == '/sign_in':
+                self.sign_in()
+                if self.signed_in == True:
+                    self.interaction()
+                    self.prompt()
+            else:
+                print(colored("Command not foud!", 'red'))
 
 
     def interaction(self):
         if self.signed_in == True:
             print('\n')
-            print("Welcome to Interact! A Simulated Smart Contract Editor ")
+            print(colored("Welcome to Interact! A Simulated Smart Contract Editor ", 'blue'))
             print("/wave: To wave at a user")
             print("/deploy_wave: To deploy a new wave")
             print("/view_waves: To view your waves")        # Print Pass transactions with hashes and datetime, and name
@@ -44,26 +46,24 @@ class Interact:
             pass 
 
     def prompt(self):
-        self.interaction()
         while True:
             prompt = str(input(': '))
 
-            
             if prompt == '/wave':
                 wave_validation = None
-                chosen_user = str(input("Please type in a user you would like to wave to: "))
+                chosen_user = str(input("Please type in the hash of a user you would like to wave to: "))
                 user_validation = None
                 accounts = db.find({})
                 for account in accounts:
-                    account_user = account['Username']
+                    account_user = account['User_Hash']
                     if account_user == chosen_user:
                         user_validation = True
-                        sender = signed_in_user
+                        sender = self.signed_in_user
                         sender_hash = self.find_user_hash(sender)
-                        date_of_wave = datetime.now()
-                        transaction_wave = {'Sender': signed_in_user, 'Sender Hash': sender_hash, 'Date': date_of_wave}
+                        date_of_wave = datetime.datetime.now()
+                        transaction_wave = {'Sender': self.signed_in_user, 'Sender Hash': sender_hash, 'Date': date_of_wave}
                         transaction_hash = blockchain.add_block(transaction_wave)
-                        transaction_wave['Wave Hash': transaction_hash]
+                        transaction_wave['Wave Hash'] = transaction_hash
                         
                         account_transactions_lst = account['Transactions']
                         account_wave_count = account['Transaction_Count']
@@ -71,13 +71,17 @@ class Interact:
                         account_wave_count += 1
 
                         time.sleep(0.1)
-                        print(colored("You have successfully wave at {user}".format(user=sender), 'green'))
+                        sent_user = account['Username']
+                        print(colored("{primary} have successfully wave at {user}".format(primary=self.signed_in_user, user=sent_user), 'green'))
                         wave_validation = True
                     else:
                         pass 
             
                 if wave_validation == None:
                     print(colored('{user} cannot be waved to'.format(user=chosen_user), 'red'))
+            
+            elif prompt == '/deploy_wave':
+                pass
             
     
     def find_user_hash(self, user):
