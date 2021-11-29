@@ -14,15 +14,61 @@ db = user_cluster['blockchain']['users']
 class Interact:
 
     signed_in = None
+    signed_in_user = None
 
     def interaction(self):
         if self.signed_in == True:
             print("Welcome to Interact! A Simulated Smart Contract Editor ")
             print("/wave: To wave at a user")
             print("/deploy_wave: To deploy a new wave")
-            print("/view_waves: To view your waves")
-            print("/")    
+            print("/view_waves: To view your waves")        # Print Pass transactions with hashes and datetime, and name
+        else:
+            pass 
 
+    def prompt(self):
+        self.interaction()
+        while True:
+            prompt = str(input(': '))
+
+            
+            if prompt == '/wave':
+                wave_validation = None
+                chosen_user = str(input("Please type in a user you would like to wave to: "))
+                user_validation = None
+                accounts = db.find({})
+                for account in accounts:
+                    account_user = account['Username']
+                    if account_user == chosen_user:
+                        user_validation = True
+                        sender = signed_in_user
+                        sender_hash = self.find_user_hash(sender)
+                        date_of_wave = datetime.now()
+                        transaction_wave = {'Sender': signed_in_user, 'Sender Hash': sender_hash, 'Date': date_of_wave}
+                        transaction_hash = blockchain.add_block(transaction_wave)
+                        transaction_wave['Wave Hash': transaction_hash]
+                        
+                        account_transactions_lst = account['Transactions']
+                        account_wave_count = account['Transaction_Count']
+                        account_transactions_lst.append(transaction_wave)
+                        account_wave_count += 1
+
+                        time.sleep(0.1)
+                        print(colored("You have successfully wave at {user}".format(user=sender), 'green'))
+                        wave_validation = True
+                    else:
+                        pass 
+            
+                if wave_validation == None:
+                    print(colored('{user} cannot be waved to'.format(user=chosen_user), 'red'))
+    
+    
+    def find_user_hash(self, user):
+        accounts = db.find({})
+        for account in accounts:
+            account_user = account['Username']
+            if account_user == user:
+                account_hash = account['User_Hash']
+                return account_hash
 
 
     def transaction(self):
@@ -34,7 +80,7 @@ class Interact:
         user_pass = user_pass.strip(" ")
         new_user = User()
         new_user = new_user.create_user(user_user, user_pass)
-        user_account = {'Username': new_user[0], 'Password': user_pass, 'Transaction_Count': new_user[2], 'Transactions': new_user[-2], 'User_Hash': new_user[-1]}
+        user_account = {'Username': new_user[0], 'Password': new_user[1], 'Transaction_Count': new_user[2], 'Transactions': new_user[-2], 'User_Hash': new_user[-1]}
         db.insert_one(user_account)
         print(colored("Account creation successful!", 'green'))
         time.sleep(0.2)
@@ -55,6 +101,7 @@ class Interact:
             if current_user == user_user and current_pass == user_pass and current_user_hash == user_hash:
                 print(colored("You have successfully signed in as {user}".format(user=current_user), 'green'))
                 self.signed_in = True
+                self.signed_in_user = current_user
             else:
                 pass 
         
