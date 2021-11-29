@@ -5,6 +5,7 @@ from pymongo import MongoClient
 from termcolor import colored
 import random
 import time
+from contract import Contract
 
 blockchain = Blockchain()
 
@@ -66,9 +67,9 @@ class Interact:
                         transaction_wave['Wave Hash'] = transaction_hash
                         
                         account_transactions_lst = account['Transactions']
-                        account_wave_count = account['Transaction_Count']
+                        account_wave_count = account['Wave']
                         account_transactions_lst.append(transaction_wave)
-                        account_wave_count += 1
+                        account_wave_count.add_wave()
 
                         time.sleep(0.1)
                         sent_user = account['Username']
@@ -107,7 +108,7 @@ class Interact:
                 user_pass = user_pass.strip(" ")
                 new_user = User()
                 new_user = new_user.create_user(user_user, user_pass)
-                user_account = {'Username': new_user[0], 'Password': new_user[1], 'Transaction_Count': new_user[2], 'Transactions': new_user[-2], 'User_Hash': new_user[-1]}
+                user_account = {'Username': new_user[0], 'Password': new_user[1], 'Wave': Contract(), 'Transactions': new_user[-2], 'User_Hash': new_user[-1]}
                 db.insert_one(user_account)
                 print(colored("Account creation successful!", 'green'))
                 time.sleep(0.2)
