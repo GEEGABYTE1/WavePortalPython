@@ -13,7 +13,7 @@ db = user_cluster['blockchain']['users']
 
 class Interact:
 
-
+    signed_in = None
     
     def transaction(self):
         pass
@@ -24,9 +24,35 @@ class Interact:
         user_pass = user_pass.strip(" ")
         new_user = User()
         new_user = new_user.create_user(user_user, user_pass)
-        user_account = {'Name': new_user[0], 'Transactions': new_user[2], 'User_Hash': new_user[-1]}
+        user_account = {'Username': new_user[0], 'Password': user_pass, 'Transactions': new_user[2], 'User_Hash': new_user[-1]}
         db.insert_one(user_account)
         print(colored("Account creation successful!", 'green'))
+        time.sleep(0.2)
+        print("{user} account hash: {hash}".format(user=new_user[0], hash=new_user[-1]))
+
+    def sign_in(self):
+        user_user = str(input("Please type in your username: "))
+        user_pass = str(input("Please type in your password: "))
+        user_hash = str(input("Please type in your account hash: "))
+        
+        users = db.find({})
+        
+        for account in users:
+            current_user = account['Username']
+            current_pass = account['Password']
+            current_user_hash = account['User_Hash']
+
+            if current_user == user_user and current_pass == user_pass and current_user_hash == user_hash:
+                print(colored("You have successfully signed in as {user}".format(user=current_user), 'green'))
+                self.signed_in = True
+            else:
+                pass 
+        
+        if self.signed_in == None:
+            print(colored("Some credentials don't match", 'red'))
+
+
+
 
 class User:
 
@@ -43,5 +69,6 @@ class User:
 
 test = Interact()
 
-print(test.sign_up())
+
+
 
