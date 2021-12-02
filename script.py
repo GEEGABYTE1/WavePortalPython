@@ -83,7 +83,18 @@ class Interact:
             elif prompt == '/view_wave':
                 chosen_user = str(input("Please type in a hash of a user you would like to see the number of waves: "))
                 accounts = db.find({})
-                            
+                valid = False
+                for account in accounts:
+                    account_user = account['User_Hash']
+                    if account_user == chosen_user:
+                        valid = True 
+                        account_wave_amount = account['Wave']
+                        account_wave_amount = account_wave_amount.wave
+                        print("Here are the number of waves of {user}: {wave}".format(user=chosen_user, wave=account_wave_amount))
+                        time.sleep(0.2)
+                        print("Here are past wave details: ")
+                        
+
     
     def find_user_hash(self, user):
         accounts = db.find({})
