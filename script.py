@@ -41,7 +41,6 @@ class Interact:
             print('\n')
             print(colored("Welcome to Interact! A Simulated Smart Contract Editor ", 'blue'))
             print("/wave: To wave at a user")
-            print("/deploy_wave: To deploy a new wave")
             print("/view_waves: To view your waves")        # Print Pass transactions with hashes and datetime, and name
         else:
             pass 
@@ -81,9 +80,10 @@ class Interact:
                 if wave_validation == None:
                     print(colored('{user} cannot be waved to'.format(user=chosen_user), 'red'))
             
-            elif prompt == '/deploy_wave':
-                pass
-            
+            elif prompt == '/view_wave':
+                chosen_user = str(input("Please type in a hash of a user you would like to see the number of waves: "))
+                accounts = db.find({})
+                            
     
     def find_user_hash(self, user):
         accounts = db.find({})
