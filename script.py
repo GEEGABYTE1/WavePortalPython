@@ -93,6 +93,17 @@ class Interact:
                         print("Here are the number of waves of {user}: {wave}".format(user=chosen_user, wave=account_wave_amount))
                         time.sleep(0.2)
                         print("Here are past wave details: ")
+                        account_transaction = account['Transactions']
+                        for transaction in account_transaction:
+                            print(" ")
+                            print('-'*24)
+                            sender = transaction['Sender']
+                            hash_of_sender = transaction['Sender Hash']
+                            date = transaction['Date']
+                            print('Sender: {sender}'.format(sender=sender))
+                            print('Sender Hash: {}'.format(hash_of_sender))
+                            print('Date of Wave: {}'.format(date))
+
                         
 
     
