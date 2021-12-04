@@ -50,6 +50,14 @@ class Interact:
             prompt = str(input(': '))
 
             if prompt == '/wave':
+                global_users = self.retrieve_all_users_hash()
+                for user, code in global_users.items():
+                    print("User: {} | Hash: {}".format(user, code))
+                    print("-"*24)
+                    print("\n")
+                print(colored("Here are the current users", 'blue'))
+                time.sleep(0.2)
+                print('\n')
                 wave_validation = None
                 chosen_user = str(input("Please type in the hash of a user you would like to wave to: "))
                 user_validation = None
@@ -81,6 +89,14 @@ class Interact:
                     print(colored('{user} cannot be waved to'.format(user=chosen_user), 'red'))
             
             elif prompt == '/view_wave':
+                global_users = self.retrieve_all_users_hash()
+                for user, code in global_users.items():
+                    print("User: {} | Hash: {}".format(user, code))
+                    print("-"*24)
+                    print("\n")
+                print(colored("Here are the current users", 'blue'))
+                time.sleep(0.2)
+                print('\n')
                 chosen_user = str(input("Please type in a hash of a user you would like to see the number of waves: "))
                 accounts = db.find({})
                 valid = False
@@ -174,6 +190,16 @@ class Interact:
             users.append(account['Username'])
         
         return users
+
+    def retrieve_all_users_hash(self):
+        user_hash = {}
+        accounts = db.find({})
+        for account in accounts:
+            user = account['Username']
+            hash_code = account['User_Hash']
+            user_hash[user] = hash_code 
+        
+        return user_hash
 
 
 
