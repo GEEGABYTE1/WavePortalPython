@@ -103,6 +103,14 @@ class Interact:
                             print('Sender: {sender}'.format(sender=sender))
                             print('Sender Hash: {}'.format(hash_of_sender))
                             print('Date of Wave: {}'.format(date))
+                    else:
+                        pass 
+
+                if valid == False:
+                    print("{} was not found".format(chosen_user))
+
+            else:
+                print("That command is not valid.")
 
                         
 
